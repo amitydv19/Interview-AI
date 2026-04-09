@@ -1,5 +1,6 @@
-const { Router } = require('express')
+const { Router } = require("express")
 const authController = require("../controllers/auth.controller")
+const authMiddleware = require("../middlewares/auth.middlewares")
 
 const authRouter = Router()
 
@@ -15,7 +16,22 @@ authRouter.post("/register", authController.registerUserController)
  * @description Login a user
  * @access Public
  */
-authRouter.post("/api/login", authController.loginUserController)
+authRouter.post("/login", authController.loginUserController)
+
+/**
+ * @route GET/api/auth/logout
+ * @description clear Token from user cookie and add the token blacklist
+ * @access public
+ */
+authRouter.get("/logout", authController.logoutUserController)
+
+
+/**
+ * @route GET/api/auth/get-me
+ * @description get the current logged in user details
+ * @access private
+ */
+authRouter.get("/get-me", authMiddleware.authUser, authController.getMeController)
 
 
 module.exports = authRouter
