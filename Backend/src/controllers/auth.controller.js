@@ -5,7 +5,7 @@ const tokenBlacklistModel = require("../models/blacklist.model")
 
 /**
  * @name registerUserController
- * @description register a new user, expects username, email and password in the request body
+ * @describe register a new user, expects username, email and password in the request body
  * @access Public
  */
 async function registerUserController(req, res) {
@@ -64,7 +64,7 @@ async function registerUserController(req, res) {
 
 /**
  * @name loginUserController
- * @description login a user, expects email and password in the request body
+ * @describe login a user, expects email and password in the request body
  * @access Public
  */
 async function loginUserController(req, res) {
@@ -121,7 +121,7 @@ async function loginUserController(req, res) {
 
 /**
  * @name logoutUserController
- * @description clear token from user cookie and add the token in blacklist
+ * @describe clear token from user cookie and add the token in blacklist
  * @access public
  */
 async function logoutUserController(req, res) {
@@ -138,7 +138,7 @@ async function logoutUserController(req, res) {
 
 /**
  * @name getMeController
- * @description get the current logged in user details
+ * @describe get the current logged in user details
  * @access private
  */
 
