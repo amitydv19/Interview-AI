@@ -8,19 +8,21 @@ export const useAuth = () => {
     const { user, setUser, loading, setLoading } = context;
 
     const handleLogin = async ({ email, password }) => {
-    setLoading(true);
-    try {
-        const data = await login({ email, password });
+            setLoading(true);
+        try {
+            const data = await login({ email, password });
 
-        localStorage.setItem("token", data.token); // ✅ ADD THIS
-        setUser(data.user);
+            localStorage.setItem("token", data.token);
+            setUser(data.user);
 
-    } catch (err) {
-        console.error("Login Error:", err);
-    } finally {
-        setLoading(false);
+            return true; // ✅ IMPORTANT
+        } catch (err) {
+            console.error("Login Error:", err);
+            return false; // ✅ IMPORTANT
+        } finally {
+            setLoading(false);
     }
-};
+    };
 
     const handleRegister = async ({ username, email, password }) => {
         setLoading(true);
@@ -47,25 +49,28 @@ export const useAuth = () => {
     };
 
     useEffect(() => {
+    const token = localStorage.getItem("token");
 
-        const getAndSetUser = async () => {
-    try {
-        console.log("Calling getMe...");
-        const data = await getMe();
-        console.log("getMe result:", data);
-
-        setUser(data.user);
-    } catch (error) {
-        console.log("Auth error:", error);
-        setUser(null);
-    } finally {
+    if (!token) {
         setLoading(false);
+        return;
     }
-};
 
-        getAndSetUser();
+    const getAndSetUser = async () => {
+    try {
+      const data = await getMe();
+      setUser(data.user);
+    } catch (err) {
+      console.error("GetMe Error:", err);
+      localStorage.removeItem("token");
+      setUser(null); // ✅ explicitly reset
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    }, []);
+  getAndSetUser();
+}, []);
 
 
     return { user, loading, handleRegister, handleLogin, handleLogout };

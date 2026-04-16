@@ -5,6 +5,14 @@ const api = axios.create({
     withCredentials: true
 })
 
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 export async function register({username, email, password}) {
     try{
         const response = await api.post('/api/auth/register',{
@@ -45,7 +53,7 @@ export async function getMe() {
         const response = await api.get("/api/auth/get-me");
         return response.data;
     } catch (err) {
-        console.log("getMe error:", err);
-        return { user: null }; // ✅ IMPORTANT
+        console.log("getMe error:", err.response?.data || err.message);
+        throw err; // 🔥 IMPORTANT
     }
 }

@@ -2,8 +2,15 @@ import { createBrowserRouter } from "react-router-dom";
 import Login from "./features/auth/pages/Login";
 import Register from "./features/auth/pages/Register";
 import Protected from "./features/auth/components/Protected";
+import Home from "./features/interview/pages/home";
+import Landing from "./features/interview/pages/landing";
+
 
 export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Landing />, // 👈 NOW landing page shows first
+  },
   {
     path: "/login",
     element: <Login />,
@@ -13,11 +20,11 @@ export const router = createBrowserRouter([
     element: <Register />,
   },
   {
-    path: "/",
-    element: (
-      <Protected>
-        <h1>Home Page</h1>
-      </Protected>
-    ),
+    path: "/home",
+    element: <Protected><Home /></Protected>
+  },
+  {
+    path: "/interview/:interviewId",
+    element: <Protected><Home /></Protected>
   },
 ]);

@@ -13,11 +13,12 @@ const interviewRouter = express.Router();
  * @access Private
  */
 
+// In interview.routes.js, comment out authUser temporarily
 interviewRouter.post(
     "/",
-    authUser,
+    // authUser,        // 👈 comment this out
     upload.single("resume"),
-    interviewController.generateInterviewReportController  // ✅ matches the export
+    interviewController.generateInterviewReportController
 );
 
 
