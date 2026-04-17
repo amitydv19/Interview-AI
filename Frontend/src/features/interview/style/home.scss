@@ -25,10 +25,8 @@
   --nav-h:        60px;
 }
 
-// ── Reset ─────────────────────────────────────────────
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; }
+// NOTE: Global resets (*, html, body) removed to prevent conflicts
+// with landing.scss. The global reset lives in style.scss.
 
 // ── Root wrapper ─────────────────────────────────────
 .home-root {
@@ -200,12 +198,13 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 }
 
 // ── Hero ──────────────────────────────────────────────
-.hero {
+// Scoped under .home-root to avoid collision with landing.scss's .hero
+.home-root .hero {
   text-align: center;
   padding: 72px 0 52px;
 
   // Staggered entrance
-  .home-root.mounted & {
+  &.mounted & {
     .hero-label  { animation: fadeUp 0.6s 0.1s ease both; }
     .hero-title  { animation: fadeUp 0.7s 0.2s ease both; }
     .hero-sub    { animation: fadeUp 0.7s 0.35s ease both; }
@@ -267,7 +266,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 }
 
 // ── Glass Card ────────────────────────────────────────
-.glass-card {
+// Scoped under .home-root to avoid collision with landing.scss
+.home-root .glass-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-card);

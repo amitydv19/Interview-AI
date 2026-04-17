@@ -169,9 +169,7 @@ Respond with ONLY valid JSON, no markdown formatting.`;
             
             if (isQuotaError) {
                 if (attempt < maxRetries - 1) {
-                    const retryDelay = (attempt + 1) * 30000; // 30s, 60s
-                    console.log(`⏳ Quota exceeded. Retrying in ${retryDelay / 1000} seconds...`);
-                    await new Promise(resolve => setTimeout(resolve, retryDelay));
+                    console.log(`⏳ Quota exceeded. Retrying immediately...`);
                     continue;
                 } else {
                     // Last attempt failed with quota - use mock data

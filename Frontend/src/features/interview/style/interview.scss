@@ -1,23 +1,21 @@
-$bg:          #0e0f14;
-$surface:     #16181f;
-$surface-2:   #1e2028;
-$border:      #2a2c38;
-$text:        #e8eaf0;
-$text-muted:  #6b7080;
-$accent:      #7c6dfa;       // violet
-$accent-2:    #fa6d8e;       // coral
-$success:     #4cda8a;
+$bg: #0e0f14;
+$surface: #16181f;
+$surface-2: #1e2028;
+$border: #2a2c38;
+$text: #e8eaf0;
+$text-muted: #6b7080;
+$accent: #7c6dfa;
+$accent-2: #fa6d8e;
+$success: #4cda8a;
 $font-display: 'Syne', sans-serif;
-$font-body:    'DM Sans', sans-serif;
+$font-body: 'DM Sans', sans-serif;
 
-// ── Google Fonts ─────────────────────────────
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-// ── Reset ─────────────────────────────────────
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; background: $bg; color: $text; font-family: $font-body; }
+// NOTE: Global resets (*, html, body) removed to prevent conflicts
+// with landing.scss. The global reset lives in style.scss.
 
-// ── Glass Morphism Mixin ──────────────────────
+// ── Mixins ────────────────────────────────────
 @mixin glass-effect {
   background: rgba($surface, 0.7);
   backdrop-filter: blur(10px) saturate(180%);
@@ -42,6 +40,7 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   height: 56px;
   @include glass-effect-strong;
   border-bottom: 1px solid rgba(#fff, 0.08);
+  flex-shrink: 0; // ← never let navbar compress
 
   .navbar-brand {
     display: flex;
@@ -52,8 +51,13 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     font-size: 15px;
     letter-spacing: 0.04em;
 
-    .brand-icon { font-size: 18px; }
-    .brand-name { color: $accent; }
+    .brand-icon {
+      font-size: 18px;
+    }
+
+    .brand-name {
+      color: $accent;
+    }
   }
 
   .navbar-title {
@@ -62,6 +66,10 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     font-weight: 500;
     color: $text-muted;
     letter-spacing: 0.02em;
+    max-width: 400px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .navbar-btn {
@@ -75,36 +83,562 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     cursor: pointer;
     transition: border-color 0.2s, color 0.2s;
 
-    &:hover { border-color: $accent-2; color: $accent-2; }
+    &:hover {
+      border-color: $accent-2;
+      color: $accent-2;
+    }
   }
+}
+
+// ── Page shell ────────────────────────────────
+// ✅ FIX: Full-page flex column so footer is always pushed to bottom
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+// ── Main content area (grows to fill space) ───
+.page-content {
+  flex: 1; // ← pushes footer down
+  display: flex;
+  overflow: hidden;
+  height: calc(100vh - 56px); // subtract navbar
 }
 
 // ── Layout ────────────────────────────────────
 .interview-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr 260px;
+  display: flex;
+  width: 100%;
   height: calc(100vh - 56px);
   overflow: hidden;
+  background: var(--bg-base);
 }
 
-// ── Sidebars ──────────────────────────────────
+.sidebar {
+  flex: 0 0 280px;
+  background: rgba(#1e1e2d, 0.4);
+  border-right: 1px solid rgba(#fff, 0.05);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  overflow-y: auto;
+  
+  &--right {
+    border-right: none;
+    border-left: 1px solid rgba(#fff, 0.05);
+  }
+
+  // Hide scrollbar for clean look
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.interview-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 32px 40px;
+  background: linear-gradient(180deg, rgba(#8b5cf6, 0.03) 0%, transparent 100%);
+}
+
+// ── Left Hero Panel ───────────────────────────
+// ✅ FIX: Fixed width sidebar for the hero text, doesn't shrink below 260px
+.hero-panel {
+  flex: 0 0 280px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 32px;
+  background: linear-gradient(160deg, rgba($accent, 0.07) 0%, transparent 60%);
+  border-right: 1px solid rgba(#fff, 0.05);
+  overflow: hidden;
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba($accent, 0.3);
+    background: rgba($accent, 0.08);
+    color: $accent;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    width: fit-content;
+  }
+
+  .hero-title {
+    font-family: $font-display;
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: $text;
+    margin-bottom: 20px;
+
+    .gradient-word {
+      background: linear-gradient(135deg, $accent, $accent-2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  .hero-sub {
+    font-size: 13px;
+    color: $text-muted;
+    line-height: 1.7;
+  }
+}
+
+// ── Cards Container ───────────────────────────
+// ✅ FIX: Two cards side by side, each taking equal space, scrollable vertically
+.cards-container {
+  flex: 1;
+  display: flex;
+  gap: 0;
+  overflow: hidden; // clips children; each card scrolls independently
+}
+
+// ── Individual Input Card ─────────────────────
+// ✅ FIX: Each card takes exactly 50% of the available space
+.input-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border-right: 1px solid rgba(#fff, 0.05);
+  @include glass-effect;
+
+  scrollbar-width: thin;
+  scrollbar-color: $border transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border;
+    border-radius: 4px;
+  }
+
+  &:last-child {
+    border-right: none;
+  }
+
+  // Card header row
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid rgba(#fff, 0.07);
+    flex-shrink: 0; // header never squishes
+
+    .card-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .card-header-text {
+      flex: 1;
+
+      .card-title {
+        font-family: $font-display;
+        font-size: 15px;
+        font-weight: 700;
+        color: $text;
+        margin-bottom: 4px;
+      }
+
+      .card-subtitle {
+        font-size: 12px;
+        color: $text-muted;
+        line-height: 1.5;
+      }
+    }
+
+    .required-badge {
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba($accent-2, 0.15);
+      color: $accent-2;
+      border: 1px solid rgba($accent-2, 0.25);
+    }
+  }
+
+  // Card body — scrollable content
+  &__body {
+    flex: 1;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  // Card footer — generate button
+  &__footer {
+    flex-shrink: 0;
+    padding: 16px 24px 20px;
+    border-top: 1px solid rgba(#fff, 0.07);
+  }
+}
+
+// ── Textarea ──────────────────────────────────
+.answer-textarea {
+  width: 100%;
+  min-height: 220px;
+  flex: 1;
+  padding: 14px 16px;
+  @include glass-effect;
+  border-radius: 10px;
+  color: $text;
+  font-family: $font-body;
+  font-size: 14px;
+  line-height: 1.7;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder {
+    color: $text-muted;
+    opacity: 0.5;
+  }
+
+  &:focus {
+    border-color: $accent;
+    box-shadow: 0 0 0 3px rgba($accent, 0.12), inset 0 0 0 1px rgba($accent, 0.2);
+  }
+}
+
+.char-count {
+  font-size: 11px;
+  color: $text-muted;
+  text-align: right;
+  font-family: $font-display;
+}
+
+// ── Upload Zone ───────────────────────────────
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.upload-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .upload-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $text-muted;
+  }
+
+  .upload-new-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $success;
+    background: rgba($success, 0.1);
+    border: 1px solid rgba($success, 0.25);
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba($success, 0.18);
+    }
+  }
+}
+
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 20px;
+  border-radius: 10px;
+  border: 1.5px dashed rgba(#fff, 0.12);
+  background: rgba($surface-2, 0.4);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: center;
+
+  &:hover {
+    border-color: rgba($accent, 0.4);
+    background: rgba($accent, 0.04);
+  }
+
+  .upload-arrow {
+    font-size: 22px;
+    color: $text-muted;
+    line-height: 1;
+  }
+
+  .upload-main {
+    font-size: 13px;
+    font-weight: 500;
+    color: $text;
+  }
+
+  .upload-hint {
+    font-size: 11px;
+    color: $text-muted;
+  }
+}
+
+.divider-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: $text-muted;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(#fff, 0.07);
+  }
+}
+
+.self-desc-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+// ── Info Note ─────────────────────────────────
+.info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba($accent, 0.06);
+  border: 1px solid rgba($accent, 0.15);
+
+  .info-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba($accent, 0.2);
+    color: $accent;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .info-text {
+    font-size: 12px;
+    color: $text-muted;
+    line-height: 1.6;
+
+    strong {
+      color: $text;
+      font-weight: 600;
+    }
+  }
+}
+
+// ── Generate Button ───────────────────────────
+.btn-generate {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, $accent, $accent-2);
+  color: #fff;
+  font-family: $font-display;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 6px 24px rgba($accent, 0.35);
+  letter-spacing: -0.01em;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba($accent, 0.45);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .btn-icon {
+    font-size: 16px;
+  }
+}
+
+// ── General Buttons ───────────────────────────
+.btn {
+  font-family: $font-body;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &--primary {
+    background: linear-gradient(135deg, $accent, $accent-2);
+    color: #fff;
+    padding: 9px 28px;
+    box-shadow: 0 4px 16px rgba($accent, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba($accent, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &--ghost {
+    background: rgba($border, 0.1);
+    border: 1px solid rgba($border, 0.3);
+    color: $text-muted;
+
+    &:hover:not(:disabled) {
+      background: rgba($accent, 0.1);
+      border-color: rgba($accent, 0.3);
+      color: $text;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    border: 1px solid $accent;
+    color: $accent;
+
+    &:hover {
+      background: rgba($accent, 0.08);
+    }
+  }
+}
+
+// ── Footer ────────────────────────────────────
+// ✅ FIX: Footer is now part of the page-shell flex column
+//         so it always sits at the very bottom of the page
+.page-footer {
+  flex-shrink: 0;
+  border-top: 1px solid rgba(#fff, 0.07);
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: rgba($surface, 0.6);
+  backdrop-filter: blur(10px);
+
+  .footer-brand {
+    font-family: $font-display;
+    font-size: 13px;
+    font-weight: 700;
+    color: $text-muted;
+
+    span {
+      color: $accent;
+    }
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    a {
+      font-size: 12px;
+      color: $text-muted;
+      text-decoration: none;
+      transition: color 0.15s;
+
+      &:hover {
+        color: $text;
+      }
+    }
+  }
+
+  .footer-copy {
+    font-size: 11px;
+    color: $text-muted;
+    opacity: 0.5;
+  }
+}
+
+// ── Sidebar shared styles ─────────────────────
 .sidebar {
   overflow-y: auto;
   padding: 20px 16px;
   border-color: $border;
   @include glass-effect;
 
-  // Custom scrollbar
   scrollbar-width: thin;
   scrollbar-color: $border transparent;
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb { background: $border; border-radius: 4px; }
 
-  &--left  { border-right: 1px solid rgba(#fff, 0.05); }
-  &--right { border-left: 1px solid rgba(#fff, 0.05); }
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border;
+    border-radius: 4px;
+  }
+
+  &--left {
+    border-right: 1px solid rgba(#fff, 0.05);
+  }
+
+  &--right {
+    border-left: 1px solid rgba(#fff, 0.05);
+  }
 }
 
-// ── Sidebar Nav ───────────────────────────────
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -144,7 +678,10 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     opacity: 0.7;
   }
 
-  .item__text { flex: 1; line-height: 1.3; }
+  .item__text {
+    flex: 1;
+    line-height: 1.3;
+  }
 
   .item__badge {
     font-size: 11px;
@@ -165,12 +702,18 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     background: rgba($accent, 0.15);
     color: $accent;
 
-    .item__icon { opacity: 1; }
-    .item__badge { background: rgba($accent, 0.25); color: $accent; }
+    .item__icon {
+      opacity: 1;
+    }
+
+    .item__badge {
+      background: rgba($accent, 0.25);
+      color: $accent;
+    }
   }
 }
 
-// ── Question pills (left sidebar) ─────────────
+// ── Question pills ────────────────────────────
 .question-list {
   display: flex;
   flex-direction: column;
@@ -207,16 +750,25 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     transition: background 0.15s, color 0.15s;
   }
 
-  .pill-text { line-height: 1.4; flex: 1; }
+  .pill-text {
+    line-height: 1.4;
+    flex: 1;
+  }
 
-  &:hover { background: rgba($accent, 0.08); color: $text; }
+  &:hover {
+    background: rgba($accent, 0.08);
+    color: $text;
+  }
 
   &.active {
     background: rgba($accent, 0.12);
     border-color: rgba($accent, 0.3);
     color: $text;
 
-    .pill-num { background: $accent; color: #fff; }
+    .pill-num {
+      background: $accent;
+      color: #fff;
+    }
   }
 
   &.saved .pill-num {
@@ -225,7 +777,7 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   }
 }
 
-// ── Main ──────────────────────────────────────
+// ── Question Card (interview view) ────────────
 .interview-main {
   overflow-y: auto;
   padding: 32px 36px;
@@ -233,14 +785,21 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  flex: 1;
 
   scrollbar-width: thin;
   scrollbar-color: $border transparent;
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb { background: $border; border-radius: 4px; }
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border;
+    border-radius: 4px;
+  }
 }
 
-// ── Question Card ─────────────────────────────
 .question-card {
   width: 100%;
   max-width: 720px;
@@ -250,8 +809,15 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   animation: slideUp 0.3s ease both;
 
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   &__header {
@@ -282,7 +848,10 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
       font-size: 13px;
       font-weight: 600;
       color: $text-muted;
-      span { font-weight: 400; color: $text-muted; }
+
+      span {
+        font-weight: 400;
+      }
     }
   }
 
@@ -300,7 +869,6 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   }
 }
 
-// ── Progress Bar ──────────────────────────────
 .progress-bar {
   width: 100%;
   height: 3px;
@@ -316,7 +884,6 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   }
 }
 
-// ── Question Text ─────────────────────────────
 .question-title {
   font-family: $font-display;
   font-size: 20px;
@@ -333,7 +900,6 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   margin-bottom: 24px;
 }
 
-// ── Answer Area ───────────────────────────────
 .answer-area {
   position: relative;
 
@@ -345,28 +911,6 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     text-transform: uppercase;
     color: $text-muted;
     margin-bottom: 8px;
-  }
-}
-
-.answer-textarea {
-  width: 100%;
-  min-height: 180px;
-  padding: 14px 16px;
-  @include glass-effect;
-  border-radius: 10px;
-  color: $text;
-  font-family: $font-body;
-  font-size: 14px;
-  line-height: 1.7;
-  resize: vertical;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-
-  &::placeholder { color: $text-muted; opacity: 0.5; }
-
-  &:focus {
-    border-color: $accent;
-    box-shadow: 0 0 0 3px rgba($accent, 0.12), inset 0 0 0 1px rgba($accent, 0.2);
   }
 }
 
@@ -383,49 +927,15 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   animation: fadeIn 0.2s ease;
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-}
-
-// ── Buttons ───────────────────────────────────
-.btn {
-  font-family: $font-body;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 9px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-
-  &--primary {
-    background: linear-gradient(135deg, $accent, $accent-2);
-    color: #fff;
-    padding: 9px 28px;
-    box-shadow: 0 4px 16px rgba($accent, 0.3);
-    &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba($accent, 0.4); }
-    &:active { transform: translateY(0); }
-  }
-
-  &--ghost {
-    background: rgba($border, 0.1);
-    border: 1px solid rgba($border, 0.3);
-    color: $text-muted;
-    &:hover:not(:disabled) { 
-      background: rgba($accent, 0.1);
-      border-color: rgba($accent, 0.3);
-      color: $text; 
+    from {
+      opacity: 0;
+      transform: scale(0.9);
     }
-    &:disabled { opacity: 0.3; cursor: not-allowed; }
-  }
 
-  &--outline {
-    background: transparent;
-    border: 1px solid $accent;
-    color: $accent;
-    &:hover { background: rgba($accent, 0.08); }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 }
 
@@ -450,7 +960,12 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
 
     &.spin {
       animation: spin 1.5s linear infinite;
-      @keyframes spin { to { transform: rotate(360deg); } }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     }
   }
 
@@ -468,12 +983,17 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   }
 
   &--error {
-    .state-card__icon { filter: hue-rotate(300deg); }
-    h3 { color: $accent-2; }
+    .state-card__icon {
+      filter: hue-rotate(300deg);
+    }
+
+    h3 {
+      color: $accent-2;
+    }
   }
 }
 
-// ── Roadmap Card ──────────────────────────────
+// ── Roadmap ───────────────────────────────────
 .roadmap-container {
   display: flex;
   flex-direction: column;
@@ -489,7 +1009,7 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     align-items: center;
     gap: 24px;
 
-    > div:first-child {
+    >div:first-child {
       flex: 1;
     }
 
@@ -528,7 +1048,6 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     gap: 0;
     padding-left: 0;
 
-    // Vertical connecting line
     &::before {
       content: '';
       position: absolute;
@@ -554,9 +1073,12 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
         box-shadow: 0 0 0 6px rgba($accent, 0.25);
       }
 
-      .timeline-content {
-        .timeline-title { color: $accent; }
-        .timeline-desc { color: $text; }
+      .timeline-content .timeline-title {
+        color: $accent;
+      }
+
+      .timeline-content .timeline-desc {
+        color: $text;
       }
     }
 
@@ -642,7 +1164,7 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   }
 }
 
-// ── Match Score Section ───────────────────────
+// ── Match Score ───────────────────────────────
 .match-score-section {
   @include glass-effect-strong;
   padding: 24px;
@@ -722,7 +1244,7 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   }
 }
 
-// ── Right Sidebar Sections ────────────────────
+// ── Skill Chips ───────────────────────────────
 .sidebar-section {
   margin-bottom: 28px;
 }
@@ -744,9 +1266,20 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   transition: all 0.15s;
   cursor: default;
 
-  &:nth-child(3n+1) { border-color: rgba($accent, 0.3); color: lighten($accent, 10%); }
-  &:nth-child(3n+2) { border-color: rgba($accent-2, 0.3); color: lighten($accent-2, 10%); }
-  &:nth-child(3n+3) { border-color: rgba($success, 0.3); color: lighten($success, 5%); }
+  &:nth-child(3n+1) {
+    border-color: rgba($accent, 0.3);
+    color: lighten($accent, 10%);
+  }
+
+  &:nth-child(3n+2) {
+    border-color: rgba($accent-2, 0.3);
+    color: lighten($accent-2, 10%);
+  }
+
+  &:nth-child(3n+3) {
+    border-color: rgba($success, 0.3);
+    color: lighten($success, 5%);
+  }
 }
 
 .empty-text {
@@ -773,7 +1306,9 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
   @include glass-effect;
   transition: border-color 0.15s;
 
-  &:hover { border-color: rgba($accent, 0.4); }
+  &:hover {
+    border-color: rgba($accent, 0.4);
+  }
 
   .prep-num {
     flex-shrink: 0;
@@ -793,4 +1328,228 @@ html, body { height: 100%; background: $bg; color: $text; font-family: $font-bod
     line-height: 1.5;
     color: $text-muted;
   }
+}
+
+// ── Responsive ────────────────────────────────
+@media (max-width: 900px) {
+  .hero-panel {
+    flex: 0 0 220px;
+    min-width: 200px;
+    padding: 28px 20px;
+  }
+}
+
+@media (max-width: 720px) {
+
+  // Stack cards vertically on mobile
+  .interview-layout {
+    flex-direction: column;
+    overflow-y: auto;
+    height: auto;
+  }
+
+  .page-content {
+    height: auto;
+    overflow: visible;
+  }
+
+  .hero-panel {
+    flex: none;
+    width: 100%;
+    min-width: unset;
+    border-right: none;
+    border-bottom: 1px solid rgba(#fff, 0.05);
+    padding: 32px 20px 28px;
+
+    .hero-title {
+      font-size: 28px;
+    }
+  }
+
+  .cards-container {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .input-card {
+    overflow: visible; // let page scroll naturally on mobile
+    border-right: none;
+    border-bottom: 1px solid rgba(#fff, 0.05);
+  }
+
+  .page-footer {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+
+    .footer-links {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+}
+
+// ── Sidebar Nav ──
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 30px;
+
+  &__label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba($text, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    padding-left: 12px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    color: $text-muted;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+
+    .item__icon { color: rgba($text, 0.4); width: 20px; text-align: center; font-size: 16px; }
+    .item__text { flex: 1; font-size: 13px; font-weight: 500; }
+    .item__badge { background: rgba(#fff, 0.08); padding: 2px 8px; border-radius: 12px; font-size: 10px; }
+
+    &:hover {
+      background: rgba(#fff, 0.05);
+      color: $text;
+      .item__icon { color: $accent; }
+    }
+    &.active {
+      background: rgba($accent, 0.15);
+      color: $accent-2;
+      .item__icon { color: $accent-2; }
+      .item__badge { background: rgba($accent-2, 0.2); color: $accent-2; }
+    }
+  }
+}
+
+// ── Question List ──
+.question-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.question-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(#000, 0.2);
+  border: 1px solid rgba(#fff, 0.05);
+  color: $text-muted;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  .pill-num { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; background: rgba(#fff, 0.1); border-radius: 4px; font-size: 10px; flex-shrink: 0; }
+  .pill-text { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+
+  &:hover { background: rgba(#fff, 0.05); }
+  &.active { background: rgba($accent, 0.1); border-color: rgba($accent, 0.3); color: $text; .pill-num { background: $accent; color: #fff; } }
+  &.saved { border-color: rgba($success, 0.3); .pill-num { background: rgba($success, 0.2); color: $success; } }
+}
+
+// ── Right Sidebar Components ──
+.match-score-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.score-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 16px 0;
+  
+  .score-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+  .score-bg { fill: none; stroke: rgba(#fff, 0.05); stroke-width: 6; }
+  .score-fill { fill: none; stroke: $accent-2; stroke-width: 6; stroke-linecap: round; transition: stroke-dasharray 1s ease-out; }
+  
+  .score-text {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    .score-number { font-size: 32px; font-weight: 800; line-height: 1; }
+    .score-label { font-size: 14px; color: $text-muted; }
+  }
+}
+.score-description { font-size: 12px; color: $success; font-weight: 500; }
+
+.sidebar-section { margin-bottom: 24px; }
+.skill-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.skill-chip { padding: 4px 10px; border-radius: 20px; background: rgba(#fff, 0.05); border: 1px solid rgba(#fff, 0.1); font-size: 11px; color: $text-muted; }
+
+.prep-list {
+  display: flex; flex-direction: column; gap: 8px; padding: 0; list-style: none;
+  .prep-item {
+    display: flex; gap: 10px; align-items: flex-start; padding: 10px; background: rgba(#000, 0.2); border-radius: 8px;
+    .prep-num { width: 20px; height: 20px; background: rgba($accent, 0.15); color: $accent; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px; flex-shrink: 0; }
+    .prep-text { font-size: 12px; line-height: 1.4; color: $text-muted; }
+  }
+}
+
+// ── Roadmap ──
+.roadmap-container {
+  padding: 40px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.roadmap-header {
+  margin-bottom: 32px;
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  p { font-size: 14px; color: $text-muted; }
+}
+
+.roadmap-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-left: 2px solid rgba($accent, 0.2);
+  padding-left: 20px;
+}
+
+.timeline-item {
+  position: relative;
+  padding: 16px 20px;
+  background: rgba(#000, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(#fff, 0.05);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -27px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $accent;
+    border: 3px solid var(--bg-base);
+  }
+
+  h3 { font-size: 14px; font-weight: 700; color: $accent-2; margin-bottom: 6px; }
+  p { font-size: 13px; color: $text-muted; line-height: 1.5; }
 }

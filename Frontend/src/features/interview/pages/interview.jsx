@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../style/interview.scss';
 
-// Mock Navbar inline (replace with your actual Navbar import)
+// ── Inline Navbar ─────────────────────────────────────────────────────────────
 const Navbar = ({ jobTitle }) => (
   <header className="interview-navbar">
     <div className="navbar-brand">
@@ -16,34 +16,196 @@ const Navbar = ({ jobTitle }) => (
   </header>
 );
 
+// ── Roadmap View ──────────────────────────────────────────────────────────────
+const RoadmapView = ({ prepationPlan, onBack }) => (
+  <div className="roadmap-container">
+    <div className="roadmap-header">
+      <div>
+        <h2 className="roadmap-title">Preparation Road Map</h2>
+        <span className="roadmap-days">7-day plan</span>
+      </div>
+    </div>
+
+    <div className="roadmap-timeline">
+      {prepationPlan?.length > 0 ? (
+        <div className="timeline">
+          {prepationPlan.map((item, i) => {
+            // Parse "Title: description" or "**Title**: • task • task" formats
+            let title = '';
+            let desc = '';
+            let tasks = [];
+
+            if (item.includes('**')) {
+              const boldMatch = item.match(/\*\*([^*]+)\*\*/);
+              title = boldMatch ? boldMatch[1] : '';
+              const rest = item.replace(/\*\*[^*]+\*\*:?\s*/, '');
+              tasks = rest.split('•').map(t => t.trim()).filter(Boolean);
+            } else if (item.includes(':')) {
+              const colonIdx = item.indexOf(':');
+              title = item.slice(0, colonIdx).trim();
+              const rest = item.slice(colonIdx + 1).trim();
+              tasks = rest.split('•').map(t => t.trim()).filter(Boolean);
+              if (tasks.length === 0) desc = rest;
+            } else {
+              desc = item;
+            }
+
+            return (
+              <div key={i} className="timeline-item">
+                <div className="timeline-marker">
+                  <span className="marker-label">Day {i + 1}</span>
+                </div>
+                <div className="timeline-content">
+                  {title && <h3 className="timeline-title">{title}</h3>}
+                  {desc && <p className="timeline-desc">{desc}</p>}
+                  {tasks.length > 0 && (
+                    <ul className="timeline-tasks">
+                      {tasks.map((task, idx) => (
+                        <li key={idx}>{task}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="state-card">
+          <div className="state-card__icon">📝</div>
+          <h3>No Preparation Plan Yet</h3>
+          <p>Complete the interview to generate your personalized roadmap.</p>
+        </div>
+      )}
+    </div>
+
+    <button className="btn btn--ghost" onClick={onBack} style={{ marginTop: 24 }}>
+      ← Back to Questions
+    </button>
+  </div>
+);
+
+// ── Questions View ────────────────────────────────────────────────────────────
+const QuestionsView = ({
+  activeSection,
+  currentQuestions,
+  currentQuestionIndex,
+  setCurrentQuestionIndex,
+  answers,
+  currentKey,
+  onAnswerChange,
+  onSave,
+  savedQuestions,
+}) => {
+  const progress = currentQuestions.length
+    ? Math.round(((currentQuestionIndex + 1) / currentQuestions.length) * 100)
+    : 0;
+
+  if (!currentQuestions.length) {
+    return (
+      <div className="state-card">
+        <div className="state-card__icon">📋</div>
+        <h3>No Questions Yet</h3>
+        <p>Questions will appear once the interview is generated.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="question-card">
+      {/* Header */}
+      <div className="question-card__header">
+        <div className="header-meta">
+          <span className="section-tag">
+            {activeSection === 'technical' ? '⟨/⟩ Technical' : '◎ Behavioral'}
+          </span>
+          <span className="counter">
+            {currentQuestionIndex + 1} <span>/ {currentQuestions.length}</span>
+          </span>
+        </div>
+        <div className="progress-bar">
+          <div className="progress-bar__fill" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="question-card__body">
+        <h2 className="question-title">
+          {currentQuestions[currentQuestionIndex]?.question}
+        </h2>
+        <p className="question-desc">
+          {currentQuestions[currentQuestionIndex]?.description}
+        </p>
+
+        <div className="answer-area">
+          <label className="answer-label">Your Answer</label>
+          <textarea
+            className="answer-textarea"
+            placeholder="Type your answer here…"
+            value={answers[currentKey] ?? currentQuestions[currentQuestionIndex]?.userAnswer ?? ''}
+            onChange={onAnswerChange}
+          />
+          {savedQuestions.has(currentKey) && (
+            <span className="saved-badge">✓ Saved</span>
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="question-card__footer">
+        <button
+          className="btn btn--ghost"
+          onClick={() => setCurrentQuestionIndex(p => Math.max(0, p - 1))}
+          disabled={currentQuestionIndex === 0}
+        >
+          ← Previous
+        </button>
+        <button className="btn btn--primary" onClick={onSave}>
+          Save Answer
+        </button>
+        <button
+          className="btn btn--ghost"
+          onClick={() => setCurrentQuestionIndex(p => Math.min(currentQuestions.length - 1, p + 1))}
+          disabled={currentQuestionIndex === currentQuestions.length - 1}
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ── Main Interview Component ──────────────────────────────────────────────────
 const Interview = () => {
   const { interviewId } = useParams();
+
   const [interviewData, setInterviewData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading]             = useState(true);
+  const [error, setError]                 = useState(null);
   const [activeSection, setActiveSection] = useState('technical');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers]             = useState({});
   const [savedQuestions, setSavedQuestions] = useState(new Set());
-  const [viewMode, setViewMode] = useState('questions'); // 'questions' or 'roadmap'
+  const [viewMode, setViewMode]           = useState('questions'); // 'questions' | 'roadmap'
 
+  // ── Fetch ──
   useEffect(() => {
     const fetchInterviewData = async () => {
       try {
         setLoading(true);
+
         if (interviewId) {
-          const response = await fetch(`http://localhost:3000/api/interview/${interviewId}`, {
+          const res = await fetch(`http://localhost:3000/api/interview/${interviewId}`, {
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
           });
-          if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
-          const data = await response.json();
-          setInterviewData(data);
-          setError(null);
+          if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+          setInterviewData(await res.json());
         } else {
-          // Demo data when no interviewId
+          // Demo data
           setInterviewData({
             jobdescribe: 'Senior Backend Engineer',
+            matchScore: 88,
             technicalQuestion: [
               {
                 question: 'Explain the event loop in Node.js',
@@ -68,7 +230,7 @@ const Interview = () => {
               {
                 question: 'Tell me about a time you resolved a production incident.',
                 description:
-                  'Use the STAR method. Focus on your specific actions, how you communicated with stakeholders, and what you learned from the experience.',
+                  'Use the STAR method. Focus on your specific actions, how you communicated with stakeholders, and what you learned.',
                 userAnswer: '',
               },
               {
@@ -78,16 +240,25 @@ const Interview = () => {
                 userAnswer: '',
               },
             ],
-            skillGaps: ['Redis', 'Message Queue', 'Event Loop', 'System Design', 'Docker'],
+            skillGaps: [
+              'Message Queues (Kafka/RabbitMQ)',
+              'Advanced Docker & CI/CD Pipelines',
+              'Distributed Systems Design',
+              'Production-level Redis management',
+            ],
             prepationPlan: [
-              'Review Node.js internals and event loop deeply',
-              'Build a small Redis caching project',
-              'Set up RabbitMQ locally and test pub/sub',
-              'Practice system design interviews on Excalidraw',
-              'Review Docker + Kubernetes basics',
+              'Node.js Internals & Streams: Deep dive into the Event Loop phases and process.nextTick vs setImmediate. • Practice implementing Node.js Streams for handling large data sets.',
+              'Advanced MongoDB & Indexing: Study Compound Indexes, TTL Indexes, and Text Indexes. • Practice writing complex Aggregation pipelines and using the .explain("executionStats") method.',
+              'Caching & Redis Strategies: Read about Redis data types beyond strings (Sets, Hashes, Sorted Sets). • Implement a Redis-based rate limiter or a caching layer for a sample API.',
+              'System Design & Microservices: Study Microservices communication patterns (Synchronous vs Asynchronous). • Learn about the API Gateway pattern and Circuit Breakers.',
+              'Message Queues & DevOps Basics: Watch introductory tutorials on RabbitMQ or Kafka. • Dockerize a project and write a simple GitHub Actions workflow for CI.',
+              'Data Structures & Algorithms: Solve 5–10 Medium LeetCode problems focusing on Arrays, Strings, and Hash Maps. • Review common sorting and searching algorithms.',
+              'Mock Interview & Project Review: Conduct a mock interview focusing on explaining the Real-time Chat Application architecture. • Prepare concise summaries for all work experience bullets.',
             ],
           });
         }
+
+        setError(null);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -98,6 +269,7 @@ const Interview = () => {
     fetchInterviewData();
   }, [interviewId]);
 
+  // ── Helpers ──
   const getCurrentQuestions = () => {
     if (!interviewData) return [];
     return activeSection === 'technical'
@@ -109,8 +281,8 @@ const Interview = () => {
   const currentKey = `${activeSection}-${currentQuestionIndex}`;
 
   const handleAnswerChange = (e) => {
-    setAnswers((prev) => ({ ...prev, [currentKey]: e.target.value }));
-    setSavedQuestions((prev) => {
+    setAnswers(prev => ({ ...prev, [currentKey]: e.target.value }));
+    setSavedQuestions(prev => {
       const next = new Set(prev);
       next.delete(currentKey);
       return next;
@@ -118,24 +290,29 @@ const Interview = () => {
   };
 
   const handleSave = () => {
-    setSavedQuestions((prev) => new Set([...prev, currentKey]));
+    setSavedQuestions(prev => new Set([...prev, currentKey]));
   };
 
-  const progress = currentQuestions.length
-    ? Math.round(((currentQuestionIndex + 1) / currentQuestions.length) * 100)
-    : 0;
+  const switchSection = (section) => {
+    setActiveSection(section);
+    setViewMode('questions');
+    setCurrentQuestionIndex(0);
+  };
 
+  // ── Render ──
   return (
     <>
       <Navbar jobTitle={interviewData?.jobdescribe || 'Interview Portal'} />
+
       <div className="interview-layout">
         {/* ── Left Sidebar ── */}
         <aside className="sidebar sidebar--left">
           <nav className="sidebar-nav">
             <p className="sidebar-nav__label">Sections</p>
+
             <button
-              className={`sidebar-nav__item ${activeSection === 'technical' ? 'active' : ''}`}
-              onClick={() => { setActiveSection('technical'); setViewMode('questions'); setCurrentQuestionIndex(0); }}
+              className={`sidebar-nav__item ${activeSection === 'technical' && viewMode === 'questions' ? 'active' : ''}`}
+              onClick={() => switchSection('technical')}
             >
               <span className="item__icon">⟨/⟩</span>
               <span className="item__text">Technical Questions</span>
@@ -145,8 +322,8 @@ const Interview = () => {
             </button>
 
             <button
-              className={`sidebar-nav__item ${activeSection === 'behavioral' ? 'active' : ''}`}
-              onClick={() => { setActiveSection('behavioral'); setViewMode('questions'); setCurrentQuestionIndex(0); }}
+              className={`sidebar-nav__item ${activeSection === 'behavioral' && viewMode === 'questions' ? 'active' : ''}`}
+              onClick={() => switchSection('behavioral')}
             >
               <span className="item__icon">◎</span>
               <span className="item__text">Behavioral Questions</span>
@@ -164,6 +341,7 @@ const Interview = () => {
             </button>
           </nav>
 
+          {/* Question list pills */}
           {currentQuestions.length > 0 && viewMode === 'questions' && (
             <div className="question-list">
               <p className="sidebar-nav__label">Questions</p>
@@ -176,7 +354,9 @@ const Interview = () => {
                   onClick={() => setCurrentQuestionIndex(i)}
                 >
                   <span className="pill-num">{i + 1}</span>
-                  <span className="pill-text">{q.question.slice(0, 32)}…</span>
+                  <span className="pill-text">
+                    {q.question.length > 32 ? q.question.slice(0, 32) + '…' : q.question}
+                  </span>
                 </button>
               ))}
             </div>
@@ -201,145 +381,28 @@ const Interview = () => {
               </button>
             </div>
           ) : viewMode === 'roadmap' ? (
-            <div className="roadmap-container">
-              <div className="roadmap-header">
-                <div>
-                  <h2 className="roadmap-title">Preparation Road Map</h2>
-                  <p className="roadmap-days">7-day plan</p>
-                </div>
-              </div>
-              <div className="roadmap-timeline">
-                {interviewData?.prepationPlan && interviewData.prepationPlan.length > 0 ? (
-                  <div className="timeline">
-                    {interviewData.prepationPlan.map((item, i) => (
-                      <div key={i} className="timeline-item">
-                        <div className="timeline-marker">
-                          <div className="marker-dot"></div>
-                          <div className="marker-label">Day {i + 1}</div>
-                        </div>
-                        <div className="timeline-content">
-                          {/* Extract title if it's like "**Title**: Description" */}
-                          {item.includes('**') ? (
-                            <>
-                              <h3 className="timeline-title">
-                                {item.split('**')[1] || item.split(':')[0]}
-                              </h3>
-                              <ul className="timeline-tasks">
-                                {item.split('•').slice(1).map((task, idx) => (
-                                  <li key={idx}>{task.trim()}</li>
-                                ))}
-                              </ul>
-                            </>
-                          ) : item.includes(':') ? (
-                            <>
-                              <h3 className="timeline-title">
-                                {item.split(':')[0].trim()}
-                              </h3>
-                              <p className="timeline-desc">{item.split(':')[1].trim()}</p>
-                            </>
-                          ) : (
-                            <p className="timeline-desc">{item}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="state-card">
-                    <div className="state-card__icon">📝</div>
-                    <h3>No Preparation Plan Yet</h3>
-                    <p>Complete the interview to generate your personalized roadmap.</p>
-                  </div>
-                )}
-              </div>
-              <button
-                className="btn btn--ghost"
-                onClick={() => { setViewMode('questions'); }}
-                style={{ marginTop: '24px' }}
-              >
-                ← Back to Questions
-              </button>
-            </div>
-          ) : currentQuestions.length > 0 ? (
-            <div className="question-card">
-              {/* Header */}
-              <div className="question-card__header">
-                <div className="header-meta">
-                  <span className="section-tag">
-                    {activeSection === 'technical' ? '⟨/⟩ Technical' : '◎ Behavioral'}
-                  </span>
-                  <span className="counter">
-                    {currentQuestionIndex + 1} <span>/ {currentQuestions.length}</span>
-                  </span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-bar__fill" style={{ width: `${progress}%` }} />
-                </div>
-              </div>
-
-              {/* Question */}
-              <div className="question-card__body">
-                <h2 className="question-title">
-                  {currentQuestions[currentQuestionIndex]?.question}
-                </h2>
-                <p className="question-desc">
-                  {currentQuestions[currentQuestionIndex]?.description}
-                </p>
-
-                <div className="answer-area">
-                  <label className="answer-label">Your Answer</label>
-                  <textarea
-                    className="answer-textarea"
-                    placeholder="Type your answer here…"
-                    value={
-                      answers[currentKey] ??
-                      currentQuestions[currentQuestionIndex]?.userAnswer ??
-                      ''
-                    }
-                    onChange={handleAnswerChange}
-                  />
-                  {savedQuestions.has(currentKey) && (
-                    <span className="saved-badge">✓ Saved</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Navigation */}
-              <div className="question-card__footer">
-                <button
-                  className="btn btn--ghost"
-                  onClick={() => setCurrentQuestionIndex((p) => Math.max(0, p - 1))}
-                  disabled={currentQuestionIndex === 0}
-                >
-                  ← Previous
-                </button>
-                <button className="btn btn--primary" onClick={handleSave}>
-                  Save Answer
-                </button>
-                <button
-                  className="btn btn--ghost"
-                  onClick={() =>
-                    setCurrentQuestionIndex((p) =>
-                      Math.min(currentQuestions.length - 1, p + 1)
-                    )
-                  }
-                  disabled={currentQuestionIndex === currentQuestions.length - 1}
-                >
-                  Next →
-                </button>
-              </div>
-            </div>
+            <RoadmapView
+              prepationPlan={interviewData?.prepationPlan}
+              onBack={() => setViewMode('questions')}
+            />
           ) : (
-            <div className="state-card">
-              <div className="state-card__icon">📋</div>
-              <h3>No Questions Yet</h3>
-              <p>Questions will appear once the interview is generated.</p>
-            </div>
+            <QuestionsView
+              activeSection={activeSection}
+              currentQuestions={currentQuestions}
+              currentQuestionIndex={currentQuestionIndex}
+              setCurrentQuestionIndex={setCurrentQuestionIndex}
+              answers={answers}
+              currentKey={currentKey}
+              onAnswerChange={handleAnswerChange}
+              onSave={handleSave}
+              savedQuestions={savedQuestions}
+            />
           )}
         </main>
 
         {/* ── Right Sidebar ── */}
         <aside className="sidebar sidebar--right">
+          {/* Match score — shown in roadmap view */}
           {viewMode === 'roadmap' && interviewData?.matchScore && (
             <div className="match-score-section">
               <p className="sidebar-nav__label">Match Score</p>
@@ -347,9 +410,7 @@ const Interview = () => {
                 <svg viewBox="0 0 120 120" className="score-svg">
                   <circle cx="60" cy="60" r="54" className="score-bg" />
                   <circle
-                    cx="60"
-                    cy="60"
-                    r="54"
+                    cx="60" cy="60" r="54"
                     className="score-fill"
                     style={{
                       strokeDasharray: `${(interviewData.matchScore / 100) * 2 * Math.PI * 54} ${2 * Math.PI * 54}`,
@@ -358,13 +419,25 @@ const Interview = () => {
                 </svg>
                 <div className="score-text">
                   <span className="score-number">{interviewData.matchScore}</span>
-                  <span className="score-label">Match</span>
+                  <span className="score-label">%</span>
                 </div>
               </div>
               <p className="score-description">Strong match for this role</p>
+
+              {/* Skill gap chips shown in roadmap too (matches screenshot) */}
+              {interviewData?.skillGaps?.length > 0 && (
+                <div className="sidebar-section" style={{ marginTop: 20, width: '100%' }}>
+                  <div className="skill-chips">
+                    {interviewData.skillGaps.map((skill, i) => (
+                      <span key={i} className="skill-chip">{skill}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
+          {/* Questions view — skill gaps + prep plan */}
           {viewMode === 'questions' && (
             <>
               <div className="sidebar-section">
@@ -384,12 +457,17 @@ const Interview = () => {
                 <div className="sidebar-section">
                   <p className="sidebar-nav__label">Preparation Plan</p>
                   <ol className="prep-list">
-                    {interviewData.prepationPlan.map((item, i) => (
-                      <li key={i} className="prep-item">
-                        <span className="prep-num">{i + 1}</span>
-                        <span className="prep-text">{item}</span>
-                      </li>
-                    ))}
+                    {interviewData.prepationPlan.map((item, i) => {
+                      const label = item.includes(':')
+                        ? item.split(':')[0].trim()
+                        : item.slice(0, 40);
+                      return (
+                        <li key={i} className="prep-item">
+                          <span className="prep-num">{i + 1}</span>
+                          <span className="prep-text">{label}</span>
+                        </li>
+                      );
+                    })}
                   </ol>
                 </div>
               )}
