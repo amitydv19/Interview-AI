@@ -8,15 +8,25 @@ const interviewRouter = express.Router();
 
 
 /**
+ * @route GET /api/interview/:interviewId
+ * @description Get interview by ID
+ * @access Private
+ */
+interviewRouter.get(
+    "/:interviewId",
+    authUser,
+    interviewController.getInterviewByIdController
+);
+
+/**
  * @route POST /api/interview
  * @description Generate a new interview Report basis on the provided data and resume
  * @access Private
  */
 
-// In interview.routes.js, comment out authUser temporarily
 interviewRouter.post(
     "/",
-    // authUser,        // 👈 comment this out
+    authUser,
     upload.single("resume"),
     interviewController.generateInterviewReportController
 );

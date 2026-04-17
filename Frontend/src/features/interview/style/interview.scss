@@ -1,0 +1,796 @@
+$bg:          #0e0f14;
+$surface:     #16181f;
+$surface-2:   #1e2028;
+$border:      #2a2c38;
+$text:        #e8eaf0;
+$text-muted:  #6b7080;
+$accent:      #7c6dfa;       // violet
+$accent-2:    #fa6d8e;       // coral
+$success:     #4cda8a;
+$font-display: 'Syne', sans-serif;
+$font-body:    'DM Sans', sans-serif;
+
+// ── Google Fonts ─────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+// ── Reset ─────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: $bg; color: $text; font-family: $font-body; }
+
+// ── Glass Morphism Mixin ──────────────────────
+@mixin glass-effect {
+  background: rgba($surface, 0.7);
+  backdrop-filter: blur(10px) saturate(180%);
+  border: 1px solid rgba(#fff, 0.08);
+}
+
+@mixin glass-effect-strong {
+  background: rgba($surface, 0.85);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(#fff, 0.12);
+}
+
+// ── Navbar ────────────────────────────────────
+.interview-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 56px;
+  @include glass-effect-strong;
+  border-bottom: 1px solid rgba(#fff, 0.08);
+
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+
+    .brand-icon { font-size: 18px; }
+    .brand-name { color: $accent; }
+  }
+
+  .navbar-title {
+    font-family: $font-display;
+    font-size: 14px;
+    font-weight: 500;
+    color: $text-muted;
+    letter-spacing: 0.02em;
+  }
+
+  .navbar-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba($border, 0.3);
+    background: transparent;
+    color: $text-muted;
+    font-family: $font-body;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+
+    &:hover { border-color: $accent-2; color: $accent-2; }
+  }
+}
+
+// ── Layout ────────────────────────────────────
+.interview-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr 260px;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+}
+
+// ── Sidebars ──────────────────────────────────
+.sidebar {
+  overflow-y: auto;
+  padding: 20px 16px;
+  border-color: $border;
+  @include glass-effect;
+
+  // Custom scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: $border transparent;
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: $border; border-radius: 4px; }
+
+  &--left  { border-right: 1px solid rgba(#fff, 0.05); }
+  &--right { border-left: 1px solid rgba(#fff, 0.05); }
+}
+
+// ── Sidebar Nav ───────────────────────────────
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 28px;
+}
+
+.sidebar-nav__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 8px;
+  padding: 0 8px;
+}
+
+.sidebar-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: $text-muted;
+  font-family: $font-body;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+  width: 100%;
+
+  .item__icon {
+    font-size: 13px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .item__text { flex: 1; line-height: 1.3; }
+
+  .item__badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: rgba($accent, 0.1);
+    color: $text-muted;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  &:hover {
+    background: rgba($accent, 0.08);
+    color: $text;
+  }
+
+  &.active {
+    background: rgba($accent, 0.15);
+    color: $accent;
+
+    .item__icon { opacity: 1; }
+    .item__badge { background: rgba($accent, 0.25); color: $accent; }
+  }
+}
+
+// ── Question pills (left sidebar) ─────────────
+.question-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.question-pill {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: $text-muted;
+  font-family: $font-body;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  width: 100%;
+
+  .pill-num {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba($accent, 0.1);
+    display: grid;
+    place-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: $text-muted;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .pill-text { line-height: 1.4; flex: 1; }
+
+  &:hover { background: rgba($accent, 0.08); color: $text; }
+
+  &.active {
+    background: rgba($accent, 0.12);
+    border-color: rgba($accent, 0.3);
+    color: $text;
+
+    .pill-num { background: $accent; color: #fff; }
+  }
+
+  &.saved .pill-num {
+    background: rgba($success, 0.25);
+    color: $success;
+  }
+}
+
+// ── Main ──────────────────────────────────────
+.interview-main {
+  overflow-y: auto;
+  padding: 32px 36px;
+  background: linear-gradient(135deg, rgba($bg, 0.8) 0%, rgba($surface, 0.2) 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  scrollbar-width: thin;
+  scrollbar-color: $border transparent;
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: $border; border-radius: 4px; }
+}
+
+// ── Question Card ─────────────────────────────
+.question-card {
+  width: 100%;
+  max-width: 720px;
+  @include glass-effect-strong;
+  border-radius: 16px;
+  overflow: hidden;
+  animation: slideUp 0.3s ease both;
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  &__header {
+    padding: 20px 28px 16px;
+    border-bottom: 1px solid rgba(#fff, 0.08);
+    background: rgba($surface-2, 0.4);
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .section-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: $accent;
+      background: rgba($accent, 0.1);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .counter {
+      font-family: $font-display;
+      font-size: 13px;
+      font-weight: 600;
+      color: $text-muted;
+      span { font-weight: 400; color: $text-muted; }
+    }
+  }
+
+  &__body {
+    padding: 28px;
+  }
+
+  &__footer {
+    padding: 20px 28px;
+    border-top: 1px solid rgba(#fff, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: space-between;
+  }
+}
+
+// ── Progress Bar ──────────────────────────────
+.progress-bar {
+  width: 100%;
+  height: 3px;
+  background: $border;
+  border-radius: 2px;
+  overflow: hidden;
+
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, $accent, $accent-2);
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+// ── Question Text ─────────────────────────────
+.question-title {
+  font-family: $font-display;
+  font-size: 20px;
+  font-weight: 700;
+  color: $text;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.question-desc {
+  font-size: 14px;
+  line-height: 1.7;
+  color: $text-muted;
+  margin-bottom: 24px;
+}
+
+// ── Answer Area ───────────────────────────────
+.answer-area {
+  position: relative;
+
+  .answer-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $text-muted;
+    margin-bottom: 8px;
+  }
+}
+
+.answer-textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: 14px 16px;
+  @include glass-effect;
+  border-radius: 10px;
+  color: $text;
+  font-family: $font-body;
+  font-size: 14px;
+  line-height: 1.7;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder { color: $text-muted; opacity: 0.5; }
+
+  &:focus {
+    border-color: $accent;
+    box-shadow: 0 0 0 3px rgba($accent, 0.12), inset 0 0 0 1px rgba($accent, 0.2);
+  }
+}
+
+.saved-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: $success;
+  background: rgba($success, 0.1);
+  padding: 3px 9px;
+  border-radius: 20px;
+  animation: fadeIn 0.2s ease;
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+}
+
+// ── Buttons ───────────────────────────────────
+.btn {
+  font-family: $font-body;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &--primary {
+    background: linear-gradient(135deg, $accent, $accent-2);
+    color: #fff;
+    padding: 9px 28px;
+    box-shadow: 0 4px 16px rgba($accent, 0.3);
+    &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba($accent, 0.4); }
+    &:active { transform: translateY(0); }
+  }
+
+  &--ghost {
+    background: rgba($border, 0.1);
+    border: 1px solid rgba($border, 0.3);
+    color: $text-muted;
+    &:hover:not(:disabled) { 
+      background: rgba($accent, 0.1);
+      border-color: rgba($accent, 0.3);
+      color: $text; 
+    }
+    &:disabled { opacity: 0.3; cursor: not-allowed; }
+  }
+
+  &--outline {
+    background: transparent;
+    border: 1px solid $accent;
+    color: $accent;
+    &:hover { background: rgba($accent, 0.08); }
+  }
+}
+
+// ── State Cards ───────────────────────────────
+.state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  padding: 60px 40px;
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  @include glass-effect;
+  border-radius: 16px;
+
+  .state-card__icon {
+    font-size: 40px;
+    display: block;
+
+    &.spin {
+      animation: spin 1.5s linear infinite;
+      @keyframes spin { to { transform: rotate(360deg); } }
+    }
+  }
+
+  h3 {
+    font-family: $font-display;
+    font-size: 18px;
+    font-weight: 700;
+    color: $text;
+  }
+
+  p {
+    font-size: 13px;
+    color: $text-muted;
+    line-height: 1.6;
+  }
+
+  &--error {
+    .state-card__icon { filter: hue-rotate(300deg); }
+    h3 { color: $accent-2; }
+  }
+}
+
+// ── Roadmap Card ──────────────────────────────
+.roadmap-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 32px 40px;
+  gap: 32px;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgba($bg, 0.5) 0%, rgba($surface, 0.3) 100%);
+
+  .roadmap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+
+    > div:first-child {
+      flex: 1;
+    }
+
+    .roadmap-title {
+      font-family: $font-display;
+      font-size: 32px;
+      font-weight: 700;
+      color: $text;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    .roadmap-days {
+      font-size: 12px;
+      color: $text-muted;
+      font-weight: 500;
+      margin: 12px 0 0 0;
+      display: inline-block;
+      background: rgba($accent, 0.1);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba($accent, 0.2);
+    }
+  }
+
+  .roadmap-timeline {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-left: 0;
+
+    // Vertical connecting line
+    &::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 32px;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, $accent, transparent);
+      opacity: 0.5;
+    }
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 24px;
+    padding: 24px 0;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &:hover {
+      .timeline-marker .marker-dot {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 6px rgba($accent, 0.25);
+      }
+
+      .timeline-content {
+        .timeline-title { color: $accent; }
+        .timeline-desc { color: $text; }
+      }
+    }
+
+    .timeline-marker {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 60px;
+      position: relative;
+      z-index: 1;
+
+      .marker-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, $accent, $accent-2);
+        border: 3px solid $bg;
+        box-shadow: 0 0 0 1px rgba($accent, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .marker-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: $accent;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        text-align: center;
+        width: 100%;
+      }
+    }
+
+    .timeline-content {
+      flex: 1;
+      padding: 8px 0;
+      transition: all 0.3s ease;
+
+      .timeline-title {
+        font-family: $font-display;
+        font-size: 15px;
+        font-weight: 700;
+        color: $text;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.01em;
+        transition: color 0.3s ease;
+      }
+
+      .timeline-desc {
+        font-size: 13px;
+        color: $text-muted;
+        line-height: 1.6;
+        margin: 0;
+        transition: color 0.3s ease;
+      }
+
+      .timeline-tasks {
+        list-style: none;
+        margin: 8px 0 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        li {
+          font-size: 13px;
+          color: $text-muted;
+          line-height: 1.5;
+          padding-left: 16px;
+          position: relative;
+
+          &::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: $accent;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ── Match Score Section ───────────────────────
+.match-score-section {
+  @include glass-effect-strong;
+  padding: 24px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 16px;
+
+  .sidebar-nav__label {
+    margin: 0;
+  }
+
+  .score-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .score-svg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+
+      .score-bg {
+        fill: none;
+        stroke: rgba($border, 0.5);
+        stroke-width: 4;
+      }
+
+      .score-fill {
+        fill: none;
+        stroke: url(#scoreGradient);
+        stroke-width: 4;
+        stroke-linecap: round;
+        transition: stroke-dasharray 0.6s ease;
+      }
+    }
+
+    .score-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      z-index: 1;
+
+      .score-number {
+        font-family: $font-display;
+        font-size: 36px;
+        font-weight: 700;
+        background: linear-gradient(135deg, $accent, $accent-2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .score-label {
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: $text-muted;
+      }
+    }
+  }
+
+  .score-description {
+    font-size: 12px;
+    color: $success;
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+// ── Right Sidebar Sections ────────────────────
+.sidebar-section {
+  margin-bottom: 28px;
+}
+
+.skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 4px;
+}
+
+.skill-chip {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  @include glass-effect;
+  color: $text-muted;
+  transition: all 0.15s;
+  cursor: default;
+
+  &:nth-child(3n+1) { border-color: rgba($accent, 0.3); color: lighten($accent, 10%); }
+  &:nth-child(3n+2) { border-color: rgba($accent-2, 0.3); color: lighten($accent-2, 10%); }
+  &:nth-child(3n+3) { border-color: rgba($success, 0.3); color: lighten($success, 5%); }
+}
+
+.empty-text {
+  font-size: 12px;
+  color: $text-muted;
+  font-style: italic;
+}
+
+// ── Prep List ─────────────────────────────────
+.prep-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.prep-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  @include glass-effect;
+  transition: border-color 0.15s;
+
+  &:hover { border-color: rgba($accent, 0.4); }
+
+  .prep-num {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba($accent, 0.15);
+    color: $accent;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .prep-text {
+    font-size: 12px;
+    line-height: 1.5;
+    color: $text-muted;
+  }
+}

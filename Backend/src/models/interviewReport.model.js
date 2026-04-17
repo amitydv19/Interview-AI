@@ -71,21 +71,23 @@ const interviewReportSchema = new mongoose.Schema({
     },
     resume: {
         type: String,
+        default: ''
     },
     selfdescribe: {
         type: String,
+        default: ''
     },
     matchScore: {
         type: Number,
         min: 0,
         max: 100,
+        default: 50
     },
-    
 
     technicalQuestion: [technicalQuestionSchema],
     behavioralQuestion: [behavioralQuestionSchema],
-    skillGaps: [skillGapsSchema],
-    prepationPlan: [prepationPlanSchema],
+    skillGaps: [String],
+    prepationPlan: [String],
     user:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

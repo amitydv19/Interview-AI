@@ -1,0 +1,144 @@
+.interview-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: linear-gradient(135deg, rgba(15, 20, 25, 0.95), rgba(26, 31, 39, 0.95));
+  border-bottom: 1px solid rgba(255, 20, 147, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 1rem 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff1493, #dd00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    order: 1;
+  }
+}
+
+.navbar-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .job-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #a0aec0;
+    padding: 0.5rem 1.5rem;
+    background: rgba(255, 20, 147, 0.1);
+    border: 1px solid rgba(255, 20, 147, 0.2);
+    border-radius: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    order: 2;
+  }
+}
+
+.navbar-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    order: 3;
+  }
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    gap: 1rem;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+
+  @media (max-width: 768px) {
+    align-items: center;
+    order: 1;
+    width: 100%;
+  }
+
+  .username {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e2e8f0;
+  }
+
+  .user-email {
+    font-size: 0.8rem;
+    color: #a0aec0;
+  }
+}
+
+.logout-btn {
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, #ff1493, #dd00ff);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+
+  &:hover {
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    order: 2;
+  }
+}
