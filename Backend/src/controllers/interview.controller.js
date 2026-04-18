@@ -1,5 +1,5 @@
 const pdfParse = require("pdf-parse");
-const generateInterviewReportService = require("../services/ai.services");
+const { generateInterviewReport } = require("../services/ai.services");
 const interviewReportModel = require("../models/interviewReport.model");
 
 async function generateInterviewReportController(req, res) {
@@ -29,20 +29,37 @@ async function generateInterviewReportController(req, res) {
         }
 
         // Generate interview report using AI
-        const interviewReportByAi = await generateInterviewReportService({
+        const interviewReportByAi = await generateInterviewReport({
             resume: resumeText,
             selfDescription: selfDescription || '',
             jobDescription
         });
 
-        // Create interview report in database
-        const interviewReport = await interviewReportModel.create({
+        // Transform AI response to match database schema
+        const transformedData = {
             user: req.user.id,
             resume: resumeText,
             selfdescribe: selfDescription || '',
             jobdescribe: jobDescription,
-            ...interviewReportByAi
-        });
+            matchScore: interviewReportByAi.matchScore || 50,
+            technicalQuestion: (interviewReportByAi.technicalQuestions || []).map(q => ({
+                question: q.question,
+                intention: q.intention,
+                answer: q.answer
+            })),
+            behavioralQuestion: (interviewReportByAi.behavioralQuestions || []).map(q => ({
+                question: q.question,
+                intention: q.intention,
+                answer: q.answer
+            })),
+            skillGaps: (interviewReportByAi.skillGaps || []).map(sg => sg.skill || sg),
+            prepationPlan: (interviewReportByAi.preparationPlan || []).map(pp => 
+                typeof pp === 'string' ? pp : `Day ${pp.day}: ${pp.focus} - ${pp.tasks.join(', ')}`
+            )
+        };
+
+        // Create interview report in database
+        const interviewReport = await interviewReportModel.create(transformedData);
 
         res.status(201).json({
             message: "Interview report generated successfully",
@@ -82,4 +99,8 @@ async function getInterviewByIdController(req, res) {
     }
 }
 
+async function getAllInterviewsController(req, res) {
+        const interviews = await interviewReportModel.find({ user: req.user.id });
+
+}
 module.exports = { generateInterviewReportController, getInterviewByIdController };

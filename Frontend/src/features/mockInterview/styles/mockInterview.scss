@@ -1,0 +1,484 @@
+// MockInterview.scss
+// Styling for the AI mock interview component
+
+$bg-dark: #07080d;
+$bg-surface: #0c0e16;
+$glass-bg: rgba(255, 255, 255, 0.055);
+$glass-border: rgba(255, 255, 255, 0.1);
+$text-primary: #f0f2ff;
+$text-secondary: rgba(240, 242, 255, 0.7);
+$text-muted: rgba(240, 242, 255, 0.45);
+$accent: #a78bfa;
+$accent-warm: #fb923c;
+$success: #34d399;
+$radius: 16px;
+
+.mock-interview {
+  min-height: 100vh;
+  background: linear-gradient(135deg, $bg-dark 0%, $bg-surface 100%);
+  padding: 40px 20px;
+  font-family: 'DM Sans', sans-serif;
+  color: $text-primary;
+
+  // ── Interview Start Screen ──
+  .interview-start {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    animation: fadeIn 0.6s ease;
+
+    .start-card {
+      background: $glass-bg;
+      backdrop-filter: blur(20px);
+      border: 1px solid $glass-border;
+      border-radius: $radius;
+      padding: 48px;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+      h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, $accent, $accent-warm);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      p {
+        font-size: 14px;
+        color: $text-muted;
+        margin-bottom: 32px;
+        line-height: 1.6;
+      }
+
+      .start-info {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 32px;
+
+        .info-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px;
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 10px;
+          border: 1px solid $glass-border;
+
+          .icon {
+            font-size: 18px;
+          }
+
+          span {
+            font-size: 13px;
+            color: $text-secondary;
+
+            strong {
+              color: $accent;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // ── Interview Header ──
+  .interview-header {
+    margin-bottom: 24px;
+    animation: slideDown 0.6s ease;
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 12px;
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, $accent, $accent-warm);
+        transition: width 0.3s ease;
+      }
+    }
+
+    .progress-text {
+      font-size: 12px;
+      color: $text-muted;
+      font-weight: 500;
+    }
+  }
+
+  // ── Interview Container ──
+  .interview-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // ── Chat Area ──
+  .chat-area {
+    background: $glass-bg;
+    backdrop-filter: blur(20px);
+    border: 1px solid $glass-border;
+    border-radius: $radius;
+    display: flex;
+    flex-direction: column;
+    height: 700px;
+    animation: slideUp 0.6s ease;
+
+    @media (max-width: 1024px) {
+      height: 500px;
+    }
+  }
+
+  // ── Messages Container ──
+  .messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+
+  // ── Message ──
+  .message {
+    display: flex;
+    gap: 12px;
+    animation: messageEnter 0.4s ease;
+
+    &.message-bot {
+      justify-content: flex-start;
+
+      .message-avatar {
+        flex-shrink: 0;
+        font-size: 20px;
+      }
+
+      .message-content {
+        max-width: 70%;
+        background: rgba(167, 139, 250, 0.1);
+        border: 1px solid rgba(167, 139, 250, 0.2);
+      }
+    }
+
+    &.message-user {
+      justify-content: flex-end;
+
+      .message-avatar {
+        order: 2;
+        flex-shrink: 0;
+        font-size: 20px;
+      }
+
+      .message-content {
+        order: 1;
+        max-width: 70%;
+        background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(251, 146, 60, 0.1));
+        border: 1px solid rgba(167, 139, 250, 0.3);
+      }
+    }
+
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .message-content {
+      padding: 12px 16px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+
+      p {
+        font-size: 13px;
+        line-height: 1.6;
+        color: $text-secondary;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .message-time {
+        display: block;
+        font-size: 10px;
+        color: $text-muted;
+        margin-top: 6px;
+      }
+    }
+  }
+
+  // ── Feedback Panel ──
+  .feedback-panel {
+    background: rgba(52, 211, 153, 0.05);
+    border: 1px solid rgba(52, 211, 153, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 0 24px 24px;
+    animation: slideInRight 0.5s ease;
+
+    h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: $success;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .score-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .score-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      .score-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: $text-muted;
+        text-transform: uppercase;
+      }
+
+      .score-bar {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+        overflow: hidden;
+
+        .score-fill {
+          height: 100%;
+          background: linear-gradient(90deg, $success, $accent-warm);
+          border-radius: 3px;
+          transition: width 0.5s ease;
+        }
+      }
+
+      .score-value {
+        font-size: 11px;
+        color: $text-muted;
+        font-weight: 600;
+      }
+    }
+
+    .suggestions {
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+      h4 {
+        font-size: 11px;
+        font-weight: 700;
+        color: $text-secondary;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+
+      .suggestion-item {
+        font-size: 11px;
+        color: $text-muted;
+        line-height: 1.5;
+        margin-bottom: 6px;
+        padding-left: 12px;
+        position: relative;
+
+        &:before {
+          content: '→';
+          position: absolute;
+          left: 0;
+          color: $accent;
+        }
+      }
+    }
+  }
+
+  // ── Input Area ──
+  .input-area {
+    background: $glass-bg;
+    backdrop-filter: blur(20px);
+    border: 1px solid $glass-border;
+    border-radius: $radius;
+    padding: 20px;
+    animation: slideUp 0.6s ease;
+
+    .answer-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid $glass-border;
+      border-radius: 10px;
+      color: $text-primary;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      resize: vertical;
+      transition: all 0.3s ease;
+
+      &:focus {
+        outline: none;
+        border-color: rgba(167, 139, 250, 0.5);
+        box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+        background: rgba(0, 0, 0, 0.4);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      &::placeholder {
+        color: $text-muted;
+      }
+    }
+
+    .input-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+
+      .char-count {
+        font-size: 11px;
+        color: $text-muted;
+      }
+
+      .input-actions {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}
+
+// ── Buttons ──
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.btn-primary {
+    background: linear-gradient(135deg, $accent, $accent-warm);
+    color: white;
+    box-shadow: 0 4px 16px rgba(167, 139, 250, 0.4);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(167, 139, 250, 0.6);
+    }
+  }
+
+  &.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid $glass-border;
+    color: $text-secondary;
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: $accent;
+      color: $accent;
+    }
+  }
+
+  &.btn-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+
+    &:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #f87171;
+    }
+  }
+}
+
+// ── Animations ──
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes messageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -18,6 +18,47 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+// ── Success Animations ──
+@keyframes successSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes successCheckmark {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(0deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes overlayFadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes confetti {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) rotate(360deg);
+  }
+}
+
 // ── Auth Page Scoped Styles ──
 .auth-page {
   min-height: 100vh;
@@ -287,10 +328,130 @@
         margin-left: 6px;
         transition: color 0.2s;
 
-        &:hover {
-          color: var(--cyan);
-        }
       }
     }
+  }
+
+  // ── Loading Spinner ──
+  .auth-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-base);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(236, 72, 153, 0.15); // subtle pink border
+      border-top-color: var(--pink); // solid pink top for spinning effect
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 500;
+      font-family: var(--font-body);
+      letter-spacing: 0.5px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+// ── Success Overlay ──
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 16, 0.95);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: overlayFadeOut 3s ease forwards;
+  pointer-events: none;
+}
+
+.success-content {
+  text-align: center;
+  animation: successSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.success-checkmark {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #34d399 0%, #22d3ee 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  animation: successPulse 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(52, 211, 153, 0.4);
+}
+
+.success-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #f0eeff;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.success-message {
+  font-size: 16px;
+  color: rgba(240, 238, 255, 0.7);
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.success-subtext {
+  font-size: 13px;
+  color: rgba(240, 238, 255, 0.5);
+}
+
+// Confetti particles (optional)
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  z-index: 9998;
+  
+  &.confetti--purple {
+    background: #8b5cf6;
+    animation: confetti 2.5s ease-out forwards;
+  }
+  
+  &.confetti--pink {
+    background: #ec4899;
+    animation: confetti 2.5s ease-out forwards;
+  }
+  
+  &.confetti--cyan {
+    background: #22d3ee;
+    animation: confetti 2.5s ease-out forwards;
+  }
+  
+  &.confetti--green {
+    background: #34d399;
+    animation: confetti 2.5s ease-out forwards;
   }
 }

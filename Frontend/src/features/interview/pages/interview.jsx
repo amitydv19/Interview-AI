@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import '../style/interview.scss';
+import logo from '../../../assets/logo.png';
 
 // ── Inline Navbar ─────────────────────────────────────────────────────────────
-const Navbar = ({ jobTitle }) => (
+const Navbar = ({ jobTitle, onEndSession }) => (
   <header className="interview-navbar">
     <div className="navbar-brand">
-      <span className="brand-icon">⚡</span>
-      <span className="brand-name">InterviewAI</span>
+      <img src={logo} alt="Interview AI" className="brand-logo" />
     </div>
     <div className="navbar-title">{jobTitle}</div>
     <div className="navbar-actions">
-      <button className="navbar-btn">End Session</button>
+      <button className="navbar-btn" onClick={onEndSession}>End Session</button>
     </div>
   </header>
 );
@@ -134,7 +134,7 @@ const QuestionsView = ({
           {currentQuestions[currentQuestionIndex]?.question}
         </h2>
         <p className="question-desc">
-          {currentQuestions[currentQuestionIndex]?.description}
+          {currentQuestions[currentQuestionIndex]?.intention || currentQuestions[currentQuestionIndex]?.description}
         </p>
 
         <div className="answer-area">
@@ -142,7 +142,7 @@ const QuestionsView = ({
           <textarea
             className="answer-textarea"
             placeholder="Type your answer here…"
-            value={answers[currentKey] ?? currentQuestions[currentQuestionIndex]?.userAnswer ?? ''}
+            value={answers[currentKey] ?? currentQuestions[currentQuestionIndex]?.answer ?? currentQuestions[currentQuestionIndex]?.userAnswer ?? ''}
             onChange={onAnswerChange}
           />
           {savedQuestions.has(currentKey) && (
@@ -178,6 +178,7 @@ const QuestionsView = ({
 // ── Main Interview Component ──────────────────────────────────────────────────
 const Interview = () => {
   const { interviewId } = useParams();
+  const navigate = useNavigate();
 
   const [interviewData, setInterviewData] = useState(null);
   const [loading, setLoading]             = useState(true);
@@ -293,6 +294,10 @@ const Interview = () => {
     setSavedQuestions(prev => new Set([...prev, currentKey]));
   };
 
+  const handleEndSession = () => {
+    navigate('/', { replace: true });
+  };
+
   const switchSection = (section) => {
     setActiveSection(section);
     setViewMode('questions');
@@ -302,7 +307,7 @@ const Interview = () => {
   // ── Render ──
   return (
     <>
-      <Navbar jobTitle={interviewData?.jobdescribe || 'Interview Portal'} />
+      <Navbar jobTitle={interviewData?.jobdescribe || 'Interview Portal'} onEndSession={handleEndSession} />
 
       <div className="interview-layout">
         {/* ── Left Sidebar ── */}

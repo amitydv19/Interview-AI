@@ -46,17 +46,12 @@ $font-body: 'DM Sans', sans-serif;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: $font-display;
-    font-weight: 700;
-    font-size: 15px;
-    letter-spacing: 0.04em;
 
-    .brand-icon {
-      font-size: 18px;
-    }
-
-    .brand-name {
-      color: $accent;
+    .brand-logo {
+      height: 200px;
+      width: auto;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
     }
   }
 

@@ -35,6 +35,17 @@ const Register = () => {
     navigate("/");
   };
 
+  if (loading) {
+    return (
+      <main className="auth-page">
+        <div className="auth-loading-overlay">
+          <div className="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="auth-page">
       {/* Background Elements */}

@@ -9,6 +9,21 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const createConfetti = () => {
+    const colors = ['purple', 'pink', 'cyan', 'green'];
+    for (let i = 0; i < 20; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = `confetti confetti--${colors[Math.floor(Math.random() * colors.length)]}`;
+      confetti.style.left = Math.random() * window.innerWidth + 'px';
+      confetti.style.top = Math.random() * window.innerHeight + 'px';
+      confetti.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
+      confetti.style.setProperty('--ty', (Math.random() + 0.5) * 300 + 'px');
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 2500);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,15 +31,20 @@ const Login = () => {
     const success = await handleLogin({ email, password });
 
     if (success) {
-      navigate("/home");
+      setShowSuccess(true);
+      createConfetti();
+      setTimeout(() => {
+        navigate("/home");
+      }, 2000);
     }
   };
 
   if (loading) {
     return (
       <main className="auth-page">
-        <div className="auth-split" style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <h1 style={{ color: 'white' }}>Loading.....</h1>
+        <div className="auth-loading-overlay">
+          <div className="spinner"></div>
+          <p>Loading...</p>
         </div>
       </main>
     );
@@ -32,6 +52,17 @@ const Login = () => {
 
   return (
     <main className="auth-page">
+      {showSuccess && (
+        <div className="success-overlay">
+          <div className="success-content">
+            <div className="success-checkmark">✓</div>
+            <h2 className="success-title">Welcome Back!</h2>
+            <p className="success-message">Login successful</p>
+            <p className="success-subtext">Redirecting to your dashboard...</p>
+          </div>
+        </div>
+      )}
+
       {/* Background Elements */}
       <div className="bg-grid"></div>
       <div className="orb orb--1"></div>
@@ -82,7 +113,7 @@ const Login = () => {
                 />
               </div>
 
-              <button className="button primary-button">Login</button>
+              <button className="button primary-button" disabled={showSuccess}>Login</button>
             </form>
 
             <p className="auth-footer">

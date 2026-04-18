@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../features/auth/hooks/useAuth';
+import { MockInterview, ATSAnalyzer, PerformanceDashboard } from '../../mockInterview/components';
 import '../style/home.scss';
+import logo from '../../../assets/logo.png';
 
 const Home = () => {
   const navigate = useNavigate();
   const { user, handleLogout } = useAuth();
+  const [activeTab, setActiveTab] = useState('plan');
   const [jobDescription, setJobDescription] = useState('');
   const [resume, setResume] = useState(null);
   const [selfDescription, setSelfDescription] = useState('');
@@ -14,6 +17,7 @@ const Home = () => {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [performances, setPerformances] = useState([]);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -24,8 +28,13 @@ const Home = () => {
   }, []);
 
   const handleLogoutClick = async () => {
+    navigate('/', { replace: true });
     await handleLogout();
-    navigate('/login');
+  };
+
+  const handleInterviewComplete = (data) => {
+    setPerformances([...performances, { ...data, feedback: { overallScore: 75 }, timestamp: new Date() }]);
+    setActiveTab('dashboard');
   };
 
   const handleFileChange = (e) => {
@@ -111,8 +120,7 @@ const Home = () => {
       <nav className={`home-navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="navbar-inner">
           <div className="navbar-brand">
-            <span className="brand-glyph">⚡</span>
-            <span className="brand-name">InterviewAI</span>
+            <img src={logo} alt="InterviewAI" className="brand-logo" />
           </div>
 
           <div className="navbar-pill">
@@ -158,7 +166,38 @@ const Home = () => {
         {/* Cards grid */}
         <div className="cards-grid">
 
-          {/* ── Left Card: Job Description ── */}
+          {/* ── Tab Navigation ── */}
+          <div className="tab-navigation" style={{ gridColumn: '1 / -1', marginBottom: '24px' }}>
+            <button 
+              className={`tab-btn ${activeTab === 'plan' ? 'active' : ''}`}
+              onClick={() => setActiveTab('plan')}
+            >
+              📋 Interview Plan
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'practice' ? 'active' : ''}`}
+              onClick={() => setActiveTab('practice')}
+            >
+              🎯 Mock Interview
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'ats' ? 'active' : ''}`}
+              onClick={() => setActiveTab('ats')}
+            >
+              📊 ATS Analyzer
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dashboard')}
+            >
+              📈 Performance
+            </button>
+          </div>
+
+          {/* ── Tab Content ── */}
+          {activeTab === 'plan' ? (
+            <>
+              {/* ── Left Card: Job Description ── */}
           <div className="glass-card card--left">
             <div className="card-header">
               <div className="card-header__icon">📌</div>
@@ -289,6 +328,20 @@ const Home = () => {
               </button>
             </div>
           </div>
+            </>
+          ) : activeTab === 'practice' ? (
+            <div style={{ gridColumn: '1 / -1' }}>
+              <MockInterview topic="behavioral" onComplete={handleInterviewComplete} />
+            </div>
+          ) : activeTab === 'ats' ? (
+            <div style={{ gridColumn: '1 / -1' }}>
+              <ATSAnalyzer />
+            </div>
+          ) : activeTab === 'dashboard' ? (
+            <div style={{ gridColumn: '1 / -1' }}>
+              <PerformanceDashboard performances={performances} />
+            </div>
+          ) : null}
         </div>
 
         {/* Footer */}

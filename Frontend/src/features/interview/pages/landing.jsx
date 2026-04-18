@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import "../style/landing.scss";
+import logo from "../../../assets/logo.png";
 
 const ParticleField = () => {
   const canvasRef = useRef(null);
@@ -148,8 +149,7 @@ const Landing = () => {
       {/* NAVBAR */}
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="navbar__brand">
-          <div className="brand-gem">⚡</div>
-          <span className="brand-text">InterviewAI</span>
+          <img src={logo} alt="InterviewAI" className="brand-logo" />
         </div>
         <div className="navbar__links">
           <Link to="/login" className="btn btn--ghost">Login</Link>
@@ -276,8 +276,7 @@ const Landing = () => {
       <footer className="footer">
         <div className="footer__inner">
           <div className="footer__brand">
-            <div className="brand-gem">⚡</div>
-            <span>InterviewAI</span>
+            <img src={logo} alt="InterviewAI" className="brand-logo" />
           </div>
           <p className="footer__copy">© 2026 InterviewAI. All rights reserved.</p>
         </div>
